@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فيزياء الفرات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --physics-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+      --ai-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      --vr-gradient: linear-gradient(135deg, #ff8a80 0%, #ea80fc 100%);
+      --dark-bg: #1a1a2e;
+      --dark-card: #16213e;
+      --accent-color: #ffd700;
+      --text-light: #ffffff;
+      --text-dark: #2c3e50;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.1);
+      --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+      --shadow-heavy: 0 15px 35px rgba(0, 0, 0, 0.2);
+      --shadow-glow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background: var(--primary-gradient);
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    /* Animated Background */
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #1a1a2e 100%);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .dark-mode .animated-bg {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+    }
+
+    /* Digital Circuit Background */
+    .animated-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(78, 205, 196, 0.3) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .animated-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.1) 50%, transparent 100%),
+        linear-gradient(0deg, transparent 0%, rgba(78, 205, 196, 0.1) 50%, transparent 100%);
+      background-size: 200px 200px, 150px 150px;
+      animation: circuit-flow 15s linear infinite;
+    }
+
+    /* Circuit Lines Animation */
+    .circuit-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .circuit-line {
+      position: absolute;
+      background: linear-gradient(90deg, transparent, #4ecdc4, transparent);
+      height: 2px;
+      width: 100px;
+      animation: circuit-move 3s linear infinite;
+      opacity: 0.6;
+    }
+
+    .circuit-line:nth-child(1) {
+      top: 10%;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .circuit-line:nth-child(2) {
+      top: 30%;
+      left: -100px;
+      animation-delay: 1s;
+      background: linear-gradient(90deg, transparent, #667eea, transparent);
+    }
+
+    .circuit-line:nth-child(3) {
+      top: 50%;
+      left: -100px;
+      animation-delay: 2s;
+      background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+    }
+
+    .circuit-line:nth-child(4) {
+      top: 70%;
+      left: -100px;
+      animation-delay: 0.5s;
+      background: linear-gradient(90deg, transparent, #ffd93d, transparent);
+    }
+
+    .circuit-line:nth-child(5) {
+      top: 90%;
+      left: -100px;
+      animation-delay: 1.5s;
+      background: linear-gradient(90deg, transparent, #a8edea, transparent);
+    }
+
+    /* Vertical Circuit Lines */
+    .circuit-line-vertical {
+      position: absolute;
+      background: linear-gradient(0deg, transparent, #4ecdc4, transparent);
+      width: 2px;
+      height: 100px;
+      animation: circuit-move-vertical 4s linear infinite;
+      opacity: 0.4;
+    }
+
+    .circuit-line-vertical:nth-child(6) {
+      left: 20%;
+      top: -100px;
+      animation-delay: 0s;
+    }
+
+    .circuit-line-vertical:nth-child(7) {
+      left: 40%;
+      top: -100px;
+      animation-delay: 2s;
+      background: linear-gradient(0deg, transparent, #667eea, transparent);
+    }
+
+    .circuit-line-vertical:nth-child(8) {
+      left: 60%;
+      top: -100px;
+      animation-delay: 1s;
+      background: linear-gradient(0deg, transparent, #ff6b6b, transparent);
+    }
+
+    .circuit-line-vertical:nth-child(9) {
+      left: 80%;
+      top: -100px;
+      animation-delay: 3s;
+      background: linear-gradient(0deg, transparent, #ffd93d, transparent);
+    }
+
+    /* Digital Nodes */
+    .digital-node {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #4ecdc4;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #4ecdc4;
+      animation: node-pulse 2s ease-in-out infinite;
+    }
+
+    .digital-node:nth-child(10) {
+      top: 15%;
+      left: 25%;
+      animation-delay: 0s;
+    }
+
+    .digital-node:nth-child(11) {
+      top: 35%;
+      left: 75%;
+      animation-delay: 1s;
+      background: #667eea;
+      box-shadow: 0 0 10px #667eea;
+    }
+
+    .digital-node:nth-child(12) {
+      top: 55%;
+      left: 15%;
+      animation-delay: 2s;
+      background: #ff6b6b;
+      box-shadow: 0 0 10px #ff6b6b;
+    }
+
+    .digital-node:nth-child(13) {
+      top: 75%;
+      left: 85%;
+      animation-delay: 0.5s;
+      background: #ffd93d;
+      box-shadow: 0 0 10px #ffd93d;
+    }
+
+    .digital-node:nth-child(14) {
+      top: 25%;
+      left: 50%;
+      animation-delay: 1.5s;
+      background: #a8edea;
+      box-shadow: 0 0 10px #a8edea;
+    }
+
+    /* Code Rain Effect */
+    .code-rain {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .code-column {
+      position: absolute;
+      top: -100%;
+      color: #4ecdc4;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 20px;
+      opacity: 0.3;
+      animation: code-fall 8s linear infinite;
+    }
+
+    .code-column:nth-child(1) { left: 5%; animation-delay: 0s; }
+    .code-column:nth-child(2) { left: 15%; animation-delay: 2s; color: #667eea; }
+    .code-column:nth-child(3) { left: 25%; animation-delay: 4s; color: #ff6b6b; }
+    .code-column:nth-child(4) { left: 35%; animation-delay: 1s; color: #ffd93d; }
+    .code-column:nth-child(5) { left: 45%; animation-delay: 3s; color: #a8edea; }
+    .code-column:nth-child(6) { left: 55%; animation-delay: 5s; }
+    .code-column:nth-child(7) { left: 65%; animation-delay: 1.5s; color: #667eea; }
+    .code-column:nth-child(8) { left: 75%; animation-delay: 3.5s; color: #ff6b6b; }
+    .code-column:nth-child(9) { left: 85%; animation-delay: 0.5s; color: #ffd93d; }
+    .code-column:nth-child(10) { left: 95%; animation-delay: 2.5s; color: #a8edea; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes circuit-flow {
+      0% { transform: translateX(0) translateY(0); }
+      100% { transform: translateX(50px) translateY(50px); }
+    }
+
+    @keyframes circuit-move {
+      0% { left: -100px; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    @keyframes circuit-move-vertical {
+      0% { top: -100px; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    @keyframes node-pulse {
+      0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.6; 
+        box-shadow: 0 0 10px currentColor;
+      }
+      50% { 
+        transform: scale(1.5); 
+        opacity: 1; 
+        box-shadow: 0 0 20px currentColor;
+      }
+    }
+
+    @keyframes code-fall {
+      0% { 
+        top: -100%; 
+        opacity: 0; 
+      }
+      10% { 
+        opacity: 0.3; 
+      }
+      90% { 
+        opacity: 0.3; 
+      }
+      100% { 
+        top: 100%; 
+        opacity: 0; 
+      }
+    }
+
+    /* Header Styles */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      color: var(--text-dark);
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-medium);
+      transition: all 0.3s ease;
+    }
+
+    .dark-mode header {
+      background: rgba(26, 26, 46, 0.95);
+      color: var(--text-light);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    header h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 2;
+    }
+
+    header p {
+      font-size: 1.4rem;
+      font-weight: 500;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 2rem;
+    }
+
+    .header-controls {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 10;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .dark-mode-toggle,
+    .language-toggle {
+      background: var(--accent-color);
+      border: none;
+      padding: 0.8rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 50px;
+      min-height: 50px;
+    }
+
+    .language-toggle {
+      border-radius: 25px;
+      padding: 0.8rem 1.2rem;
+      gap: 0.5rem;
+    }
+
+    .language-toggle span {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .dark-mode-toggle:hover,
+    .language-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-glow);
+    }
+
+    /* Navigation Styles */
+    nav {
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-medium);
+      transition: all 0.3s ease;
+    }
+
+    .dark-mode nav {
+      background: rgba(22, 33, 62, 0.95);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Mobile Menu Button - إضافة جديدة */
+    .mobile-menu-btn {
+      display: none;
+      background: var(--accent-color);
+      border: none;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1001;
+    }
+
+    .mobile-menu-btn:hover {
+      background: #e6c200;
+    }
+
+    /* Mobile Navigation Menu - إضافة جديدة */
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    nav a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--success-gradient);
+      transition: left 0.3s ease;
+      z-index: -1;
+    }
+
+    nav a:hover::before {
+      left: 0;
+    }
+
+    nav a:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-light);
+      border-color: var(--accent-color);
+    }
+
+    /* Section Styles */
+    section {
+      padding: 4rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.3rem;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .dark-mode .section-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Card Styles */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow-light);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+    }
+
+    .dark-mode .card {
+      background: rgba(22, 33, 62, 0.95);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .card-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .dark-mode .card-title {
+      color: var(--text-light);
+    }
+
+    .card-content {
+      color: #666;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+
+    .dark-mode .card-content {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Special Cards */
+    .physics-card {
+      background: var(--physics-gradient);
+      color: white;
+    }
+
+    .physics-card .card-icon,
+    .physics-card .card-title {
+      color: white;
+      -webkit-text-fill-color: white;
+    }
+
+    .ai-card {
+      background: var(--ai-gradient);
+      color: var(--text-dark);
+    }
+
+    .vr-card {
+      background: var(--vr-gradient);
+      color: white;
+    }
+
+    .vr-card .card-icon,
+    .vr-card .card-title {
+      color: white;
+      -webkit-text-fill-color: white;
+    }
+
+    /* Interactive Elements */
+    .interactive-demo {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .demo-button {
+      background: var(--accent-color);
+      color: var(--text-dark);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0.5rem;
+    }
+
+    .demo-button:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-glow);
+    }
+
+    /* Physics Simulation Canvas */
+    .simulation-container {
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      padding: 1rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    #physicsCanvas {
+      width: 100%;
+      height: 400px;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #1e3c72, #2a5298);
+    }
+
+    .simulation-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .control-button {
+      background: var(--success-gradient);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .control-button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Dashboard Styles */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .dashboard-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: var(--shadow-light);
+      transition: all 0.3s ease;
+    }
+
+    .dark-mode .dashboard-card {
+      background: rgba(22, 33, 62, 0.95);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .dashboard-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .dark-mode .dashboard-title {
+      color: var(--text-light);
+    }
+
+    /* Stats Section */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--accent-color);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.2rem;
+      color: white;
+      font-weight: 600;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .dark-mode .modal-content {
+      background: var(--dark-card);
+      color: var(--text-light);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #999;
+    }
+
+    /* Footer Styles */
+    footer {
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(15px);
+      color: white;
+      text-align: center;
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dark-mode footer {
+      background: rgba(22, 33, 62, 0.95);
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+      animation: sparkle 3s linear infinite;
+    }
+
+    @keyframes sparkle {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100px); }
+    }
+
+    .footer-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      /* إظهار زر القائمة في الجوال - إضافة جديدة */
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      /* إخفاء القائمة في الجوال بشكل افتراضي - إضافة جديدة */
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(44, 62, 80, 0.98);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: var(--shadow-medium);
+        border-radius: 0 0 15px 15px;
+      }
+
+      .dark-mode .nav-links {
+        background: rgba(22, 33, 62, 0.98);
+      }
+
+      /* إظهار القائمة عند التفعيل - إضافة جديدة */
+      .nav-links.active {
+        display: flex;
+      }
+
+      nav a {
+        width: 100%;
+        text-align: center;
+        margin: 0.2rem 0;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 2rem 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Scroll Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Tab System */
+    .tab-container {
+      margin: 2rem 0;
+    }
+
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .tab-button.active {
+      background: var(--accent-color);
+      color: var(--text-dark);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .progress-bar {
+      background: var(--accent-color);
+      height: 20px;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <!-- Circuit Lines -->
+    <div class="circuit-lines">
+      <div class="circuit-line"></div>
+      <div class="circuit-line"></div>
+      <div class="circuit-line"></div>
+      <div class="circuit-line"></div>
+      <div class="circuit-line"></div>
+      <div class="circuit-line-vertical"></div>
+      <div class="circuit-line-vertical"></div>
+      <div class="circuit-line-vertical"></div>
+      <div class="circuit-line-vertical"></div>
+      <div class="digital-node"></div>
+      <div class="digital-node"></div>
+      <div class="digital-node"></div>
+      <div class="digital-node"></div>
+      <div class="digital-node"></div>
+    </div>
+    
+    <!-- Code Rain Effect -->
+    <div class="code-rain">
+      <div class="code-column">
+        function physics() {<br>
+        &nbsp;&nbsp;let force = mass * acceleration;<br>
+        &nbsp;&nbsp;return force;<br>
+        }<br><br>
+        class Particle {<br>
+        &nbsp;&nbsp;constructor(x, y) {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;this.x = x;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;this.y = y;<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+      <div class="code-column">
+        E = mc²<br>
+        F = ma<br>
+        v = u + at<br>
+        s = ut + ½at²<br><br>
+        const gravity = 9.81;<br>
+        let velocity = 0;<br>
+        velocity += gravity * time;
+      </div>
+      <div class="code-column">
+        if (energy > 0) {<br>
+        &nbsp;&nbsp;motion.start();<br>
+        }<br><br>
+        for (let i = 0; i < particles.length; i++) {<br>
+        &nbsp;&nbsp;particles[i].update();<br>
+        }
+      </div>
+      <div class="code-column">
+        λ = c / f<br>
+        P = IV<br>
+        R = V / I<br><br>
+        const lightSpeed = 299792458;<br>
+        let frequency = 50;<br>
+        wavelength = lightSpeed / frequency;
+      </div>
+      <div class="code-column">
+        while (simulation.running) {<br>
+        &nbsp;&nbsp;updatePhysics();<br>
+        &nbsp;&nbsp;render();<br>
+        }<br><br>
+        AI.learn(studentData);<br>
+        AI.recommend(nextLesson);
+      </div>
+      <div class="code-column">
+        quantum.entangle(particle1, particle2);<br>
+        wave.interference(wave1, wave2);<br><br>
+        const planck = 6.626e-34;<br>
+        energy = planck * frequency;
+      </div>
+      <div class="code-column">
+        virtual_lab.start();<br>
+        experiment.run();<br><br>
+        student.progress += 10;<br>
+        achievement.unlock("physicist");
+      </div>
+      <div class="code-column">
+        neural_network.train(data);<br>
+        prediction = model.predict(input);<br><br>
+        if (understanding < 0.8) {<br>
+        &nbsp;&nbsp;provide_help();<br>
+        }
+      </div>
+      <div class="code-column">
+        magnetism.field(current, distance);<br>
+        optics.refract(angle, medium);<br><br>
+        const boltzmann = 1.381e-23;<br>
+        temperature = energy / boltzmann;
+      </div>
+      <div class="code-column">
+        blockchain.verify(certificate);<br>
+        iot.sensor.read();<br><br>
+        future_education.initialize();<br>
+        innovation.accelerate();
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Controls -->
+  <div class="header-controls">
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+      <i class="fas fa-moon" id="darkModeIcon"></i>
+    </button>
+    <button class="language-toggle" onclick="toggleLanguage()">
+      <i class="fas fa-globe" id="languageIcon"></i>
+      <span id="languageText">EN</span>
+    </button>
+  </div>
+
+  <header class="fade-in">
+    <h1 data-ar="فيزياء الفرات" data-en="Euphrates Physics">فيزياء الفرات</h1>
+    <p data-ar="أحد المشاريع الطلابية لقسم الفيزياء في كلية العلوم - جامعة الفرات بدير الزور" data-en="This project constitutes one of the distinguished student initiatives undertaken by the Department of Physics at the Faculty of Science, AL-FURAT University – Deir ez-Zor.
+
+">This project constitutes one of the distinguished student initiatives undertaken by the Department of Physics at the Faculty of Science, Euphrates University – Deir ez-Zor.
+
+</p>
+    <div class="interactive-demo">
+      <h3>الفيزيائية إيمان العبد العزيز</h3>
+      <p>رؤية أوّليّة لمنصة تقنية لتدريس مادة الفيزياء لطلاب المدارس الإعدادية والثانوية في سوريا الحرة</p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-container">
+      <!-- Mobile Menu Button - إضافة جديدة -->
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars" id="mobileMenuIcon"></i>
+      </button>
+      
+      <!-- Navigation Links - تم تعديل الهيكل -->
+      <div class="nav-links" id="navLinks">
+        <a href="#dashboard" onclick="showSection('dashboard')" data-ar="📊 لوحة القيادة" data-en="📊 Dashboard"><i class="fas fa-tachometer-alt"></i> لوحة القيادة</a>
+        <a href="#student-portal" onclick="showSection('student-portal')" data-ar="🎓 بوابة الطالب" data-en="🎓 Student Portal"><i class="fas fa-user-graduate"></i> بوابة الطالب</a>
+        <a href="#teacher-portal" onclick="showSection('teacher-portal')" data-ar="👨‍🏫 بوابة المعلم" data-en="👨‍🏫 Teacher Portal"><i class="fas fa-chalkboard-teacher"></i> بوابة المعلم</a>
+        <a href="#parent-portal" onclick="showSection('parent-portal')" data-ar="👨‍👩‍👧‍👦 بوابة أولياء الأمور" data-en="👨‍👩‍👧‍👦 Parent Portal"><i class="fas fa-users"></i> بوابة أولياء الأمور</a>
+        <a href="#admin-portal" onclick="showSection('admin-portal')" data-ar="🎯 إدارة المدرسة" data-en="🎯 School Management"><i class="fas fa-cogs"></i> إدارة المدرسة</a>
+        <a href="#physics-lab" onclick="showSection('physics-lab')" data-ar="🔬 المختبر الافتراضي" data-en="🔬 Virtual Lab"><i class="fas fa-flask"></i> المختبر الافتراضي</a>
+        <a href="#ai-assistant" onclick="showSection('ai-assistant')" data-ar=" المساعد الذكي" data-en=" AI Assistant"><i class="fas fa-robot"></i> المساعد الذكي</a>
+        <a href="#smart-tests" onclick="showSection('smart-tests')" data-ar="🧪 الاختبارات الذكية" data-en="🧪 Smart Tests"><i class="fas fa-brain"></i> الاختبارات الذكية</a>
+      </div>
+    </div>
+  </nav>
+
+
+
+  <!-- Dashboard Section -->
+  <section id="dashboard" class="fade-in section-content">
+    <div class="section-header">
+      <h2 class="section-title" data-ar="📊 لوحة القيادة الذكية" data-en="📊 Smart Dashboard">📊 لوحة القيادة الذكية</h2>
+      <p class="section-subtitle" data-ar="نظرة شاملة على الأداء والإحصائيات في الوقت الفعلي" data-en="Comprehensive overview of performance and real-time statistics">نظرة شاملة على الأداء والإحصائيات في الوقت الفعلي</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number" data-target="15000">0</span>
+        <span class="stat-label">طالب نشط</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" data-target="500">0</span>
+        <span class="stat-label">معلم متميز</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" data-target="95">0</span>
+        <span class="stat-label">% نسبة النجاح</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" data-target="1200">0</span>
+        <span class="stat-label">تجربة فيزيائية</span>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <div class="dashboard-card">
+        <h3 class="dashboard-title">📈 تحليل الأداء</h3>
+        <canvas id="performanceChart" width="400" height="200"></canvas>
+      </div>
+      <div class="dashboard-card">
+        <h3 class="dashboard-title">🎯 التقدم الأكاديمي</h3>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 85%"></div>
+        </div>
+        <p>الميكانيكا: 85%</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 92%"></div>
+        </div>
+        <p>الكهرباء: 92%</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 78%"></div>
+        </div>
+        <p>البصريات: 78%</p>
+      </div>
+      <div class="dashboard-card">
+        <h3 class="dashboard-title">🏆 الإنجازات الحديثة</h3>
+        <div style="text-align: center;">
+          <i class="fas fa-medal" style="font-size: 3rem; color: gold; margin: 1rem;"></i>
+          <p>شارة الفيزيائي المتميز</p>
+          <i class="fas fa-trophy" style="font-size: 3rem; color: silver; margin: 1rem;"></i>
+          <p>كأس التجارب المبتكرة</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Student Portal Section -->
+  <section id="student-portal" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">🎓 بوابة الطالب الذكية</h2>
+      <p class="section-subtitle">تجربة تعليمية مخصصة بالكامل لكل طالب</p>
+    </div>
+
+    <div class="grid">
+      <div class="card physics-card">
+        <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+        <h3 class="card-title">الملف الشخصي الذكي</h3>
+        <p class="card-content">ملف شخصي متطور يتتبع تقدمك الأكاديمي ويحلل نمط تعلمك لتقديم توصيات مخصصة</p>
+        <button class="demo-button" onclick="showDemo('student-profile')">عرض الملف</button>
+      </div>
+
+      <div class="card ai-card">
+        <div class="card-icon"><i class="fas fa-brain"></i></div>
+        <h3 class="card-title">المساعد الشخصي AI</h3>
+        <p class="card-content">مساعد ذكي يجيب على أسئلتك الفيزيائية ويشرح المفاهيم بطريقة تناسب أسلوب تعلمك</p>
+        <button class="demo-button" onclick="showDemo('ai-tutor')">تجربة المساعد</button>
+      </div>
+
+      <div class="card vr-card">
+        <div class="card-icon"><i class="fas fa-vr-cardboard"></i></div>
+        <h3 class="card-title">المختبر الافتراضي</h3>
+        <p class="card-content">أجري تجارب فيزيائية واقعية في بيئة افتراضية آمنة مع إمكانية تعديل جميع المتغيرات</p>
+        <button class="demo-button" onclick="showDemo('vr-lab')">دخول المختبر</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-gamepad"></i></div>
+        <h3 class="card-title">الألعاب التعليمية</h3>
+        <p class="card-content">ألعاب تفاعلية مثيرة تجعل تعلم الفيزياء ممتعاً ومشوقاً مع نظام نقاط وتحديات</p>
+        <button class="demo-button" onclick="showDemo('physics-games')">بدء اللعب</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+        <h3 class="card-title">تتبع التقدم</h3>
+        <p class="card-content">رسوم بيانية تفاعلية تُظهر تقدمك في كل موضوع مع توقعات الأداء المستقبلي</p>
+        <button class="demo-button" onclick="showDemo('progress-tracking')">عرض التقدم</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-users"></i></div>
+        <h3 class="card-title">المجتمع الطلابي</h3>
+        <p class="card-content">تواصل مع زملائك من جميع أنحاء العالم وشارك في المناقشات العلمية</p>
+        <button class="demo-button" onclick="showDemo('student-community')">انضم للمجتمع</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Teacher Portal Section -->
+  <section id="teacher-portal" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">👨‍🏫 بوابة المعلم المتطورة</h2>
+      <p class="section-subtitle">أدوات احترافية لتعليم الفيزياء بأحدث الطرق</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chalkboard"></i></div>
+        <h3 class="card-title">الفصل الذكي</h3>
+        <p class="card-content">فصل دراسي افتراضي مجهز بأحدث أدوات التدريس التفاعلية والمحاكاة الفيزيائية</p>
+        <button class="demo-button" onclick="showDemo('smart-classroom')">دخول الفصل</button>
+      </div>
+
+      <div class="card ai-card">
+        <div class="card-icon"><i class="fas fa-robot"></i></div>
+        <h3 class="card-title">مساعد التدريس AI</h3>
+        <p class="card-content">مساعد ذكي يساعدك في إعداد الدروس وتحليل أداء الطلاب وتقديم التوصيات</p>
+        <button class="demo-button" onclick="showDemo('teaching-assistant')">تجربة المساعد</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-edit"></i></div>
+        <h3 class="card-title">منشئ المحتوى</h3>
+        <p class="card-content">أدوات متقدمة لإنشاء دروس تفاعلية وتجارب محاكاة مخصصة بسهولة</p>
+        <button class="demo-button" onclick="showDemo('content-creator')">إنشاء درس</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+        <h3 class="card-title">تحليل الأداء</h3>
+        <p class="card-content">تقارير مفصلة عن أداء كل طالب مع توصيات لتحسين التعلم</p>
+        <button class="demo-button" onclick="showDemo('performance-analytics')">عرض التقارير</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+        <h3 class="card-title">إدارة الاختبارات</h3>
+        <p class="card-content">نظام متطور لإنشاء وإدارة الاختبارات مع التصحيح التلقائي والتحليل الذكي</p>
+        <button class="demo-button" onclick="showDemo('test-management')">إدارة الاختبارات</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-video"></i></div>
+        <h3 class="card-title">البث المباشر</h3>
+        <p class="card-content">بث مباشر للدروس مع إمكانية التفاعل المباشر والمشاركة الفورية</p>
+        <button class="demo-button" onclick="showDemo('live-streaming')">بدء البث</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parent Portal Section -->
+  <section id="parent-portal" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">👨‍👩‍👧‍👦 بوابة أولياء الأمور</h2>
+      <p class="section-subtitle">متابعة شاملة لتقدم أبنائكم الأكاديمي</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+        <h3 class="card-title">تقارير التقدم</h3>
+        <p class="card-content">تقارير مفصلة ودورية عن أداء ابنكم في جميع مواضيع الفيزياء مع مقارنات زمنية</p>
+        <button class="demo-button" onclick="showDemo('progress-reports')">عرض التقارير</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-bell"></i></div>
+        <h3 class="card-title">التنبيهات الذكية</h3>
+        <p class="card-content">تنبيهات فورية عن الواجبات والاختبارات والإنجازات والأنشطة المهمة</p>
+        <button class="demo-button" onclick="showDemo('smart-notifications')">إعداد التنبيهات</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-comments"></i></div>
+        <h3 class="card-title">التواصل المباشر</h3>
+        <p class="card-content">تواصل مباشر مع المعلمين والإدارة المدرسية لمتابعة أداء ابنكم</p>
+        <button class="demo-button" onclick="showDemo('direct-communication')">بدء المحادثة</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+        <h3 class="card-title">الجدول الأكاديمي</h3>
+        <p class="card-content">جدول زمني شامل للحصص والاختبارات والأنشطة مع إمكانية المزامنة</p>
+        <button class="demo-button" onclick="showDemo('academic-calendar')">عرض الجدول</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-trophy"></i></div>
+        <h3 class="card-title">الإنجازات والشهادات</h3>
+        <p class="card-content">عرض جميع إنجازات وشهادات ابنكم مع إمكانية تحميلها ومشاركتها</p>
+        <button class="demo-button" onclick="showDemo('achievements')">عرض الإنجازات</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-home"></i></div>
+        <h3 class="card-title">الدعم المنزلي</h3>
+        <p class="card-content">نصائح وإرشادات لمساعدة ابنكم في المنزل مع موارد تعليمية إضافية</p>
+        <button class="demo-button" onclick="showDemo('home-support')">الحصول على الدعم</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin Portal Section -->
+  <section id="admin-portal" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">⚙️ إدارة المدرسة</h2>
+      <p class="section-subtitle">نظام إدارة شامل ومتطور للمؤسسة التعليمية</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-users-cog"></i></div>
+        <h3 class="card-title">إدارة المستخدمين</h3>
+        <p class="card-content">إدارة شاملة لحسابات الطلاب والمعلمين وأولياء الأمور مع صلاحيات متقدمة</p>
+        <button class="demo-button" onclick="showDemo('user-management')">إدارة المستخدمين</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+        <h3 class="card-title">التحليلات المتقدمة</h3>
+        <p class="card-content">تحليلات شاملة لأداء المدرسة مع رؤى ذكية لاتخاذ القرارات الإستراتيجية</p>
+        <button class="demo-button" onclick="showDemo('advanced-analytics')">عرض التحليلات</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-book"></i></div>
+        <h3 class="card-title">إدارة المناهج</h3>
+        <p class="card-content">تخطيط وإدارة المناهج الدراسية مع إمكانية التخصيص والتطوير المستمر</p>
+        <button class="demo-button" onclick="showDemo('curriculum-management')">إدارة المناهج</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3 class="card-title">الأمان والحماية</h3>
+        <p class="card-content">نظام أمان متطور لحماية البيانات ومراقبة النشاطات وضمان الخصوصية</p>
+        <button class="demo-button" onclick="showDemo('security-system')">إعدادات الأمان</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+        <h3 class="card-title">التقارير الإدارية</h3>
+        <p class="card-content">تقارير شاملة عن جميع جوانب العملية التعليمية مع إمكانية التصدير والمشاركة</p>
+        <button class="demo-button" onclick="showDemo('admin-reports')">إنشاء تقرير</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-cog"></i></div>
+        <h3 class="card-title">إعدادات النظام</h3>
+        <p class="card-content">تخصيص شامل للمنصة مع إعدادات متقدمة للتكامل مع الأنظمة الأخرى</p>
+        <button class="demo-button" onclick="showDemo('system-settings')">الإعدادات</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Physics Lab Section -->
+  <section id="physics-lab" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">🧪 المختبر الافتراضي الخارق</h2>
+      <p class="section-subtitle">تجارب فيزيائية واقعية بتقنية ثلاثية الأبعاد</p>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="tab-button active" onclick="showTab('mechanics')">الميكانيكا</button>
+        <button class="tab-button" onclick="showTab('electricity')">الكهرباء</button>
+        <button class="tab-button" onclick="showTab('waves')">الموجات</button>
+        <button class="tab-button" onclick="showTab('thermodynamics')">الحرارة</button>
+        <button class="tab-button" onclick="showTab('optics')">البصريات</button>
+      </div>
+
+      <div id="mechanics" class="tab-content active">
+        <div class="simulation-container">
+          <canvas id="physicsCanvas"></canvas>
+          <div class="simulation-controls">
+            <button class="control-button" onclick="startSimulation('pendulum')">البندول البسيط</button>
+            <button class="control-button" onclick="startSimulation('projectile')">الحركة المقذوفة</button>
+            <button class="control-button" onclick="startSimulation('collision')">التصادم المرن</button>
+            <button class="control-button" onclick="startSimulation('circular')">الحركة الدائرية</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="electricity" class="tab-content">
+        <div class="grid">
+          <div class="card physics-card">
+            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+            <h3 class="card-title">الدائرة الكهربائية</h3>
+            <p class="card-content">بناء دوائر كهربائية تفاعلية مع قياس التيار والجهد والمقاومة</p>
+            <button class="demo-button" onclick="showDemo('electric-circuit')">بناء الدائرة</button>
+          </div>
+          <div class="card physics-card">
+            <div class="card-icon"><i class="fas fa-magnet"></i></div>
+            <h3 class="card-title">المجال المغناطيسي</h3>
+            <p class="card-content">استكشاف خطوط المجال المغناطيسي وتأثيرها على الشحنات المتحركة</p>
+            <button class="demo-button" onclick="showDemo('magnetic-field')">استكشاف المجال</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="waves" class="tab-content">
+        <div class="grid">
+          <div class="card vr-card">
+            <div class="card-icon"><i class="fas fa-wave-square"></i></div>
+            <h3 class="card-title">تداخل الموجات</h3>
+            <p class="card-content">مشاهدة تداخل الموجات البناء والهدام في بيئة ثلاثية الأبعاد</p>
+            <button class="demo-button" onclick="showDemo('wave-interference')">مشاهدة التداخل</button>
+          </div>
+          <div class="card vr-card">
+            <div class="card-icon"><i class="fas fa-volume-up"></i></div>
+            <h3 class="card-title">موجات الصوت</h3>
+            <p class="card-content">تجربة انتشار الصوت وتأثير دوبلر مع التحكم في التردد والسعة</p>
+            <button class="demo-button" onclick="showDemo('sound-waves')">تجربة الصوت</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="thermodynamics" class="tab-content">
+        <div class="grid">
+          <div class="card ai-card">
+            <div class="card-icon"><i class="fas fa-thermometer-half"></i></div>
+            <h3 class="card-title">قوانين الغازات</h3>
+            <p class="card-content">محاكاة سلوك الغازات تحت ظروف مختلفة من الضغط والحرارة والحجم</p>
+            <button class="demo-button" onclick="showDemo('gas-laws')">تجربة الغازات</button>
+          </div>
+          <div class="card ai-card">
+            <div class="card-icon"><i class="fas fa-fire"></i></div>
+            <h3 class="card-title">انتقال الحرارة</h3>
+            <p class="card-content">دراسة طرق انتقال الحرارة: التوصيل والحمل والإشعاع</p>
+            <button class="demo-button" onclick="showDemo('heat-transfer')">دراسة الحرارة</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="optics" class="tab-content">
+        <div class="grid">
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-eye"></i></div>
+            <h3 class="card-title">انكسار الضوء</h3>
+            <p class="card-content">تجربة انكسار الضوء عبر وسائط مختلفة مع حساب زوايا الانكسار</p>
+            <button class="demo-button" onclick="showDemo('light-refraction')">تجربة الانكسار</button>
+          </div>
+          <div class="card">
+            <div class="card-icon"><i class="fas fa-search"></i></div>
+            <h3 class="card-title">العدسات والمرايا</h3>
+            <p class="card-content">دراسة تكوين الصور بالعدسات والمرايا مع التحكم في البعد البؤري</p>
+            <button class="demo-button" onclick="showDemo('lenses-mirrors')">دراسة العدسات</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Assistant Section -->
+  <section id="ai-assistant" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title"> المساعد الذكي للفيزياء</h2>
+      <p class="section-subtitle">مساعد ذكي متطور يفهم الفيزياء ويتحدث العربية</p>
+    </div>
+
+    <div class="grid">
+      <div class="card ai-card">
+        <div class="card-icon"><i class="fas fa-microphone"></i></div>
+        <h3 class="card-title">المساعد الصوتي</h3>
+        <p class="card-content">اسأل أي سؤال في الفيزياء بصوتك واحصل على إجابة صوتية مفصلة</p>
+        <div style="margin-top: 1rem;">
+          <button class="demo-button" onclick="startVoiceRecording()">🎤 ابدأ التسجيل</button>
+          <button class="demo-button" onclick="stopVoiceRecording()">⏹️ إيقاف</button>
+        </div>
+        <div id="voiceResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; display: none;">
+          <p id="voiceText"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-comments"></i></div>
+        <h3 class="card-title">المحادثة النصية</h3>
+        <p class="card-content">اكتب سؤالك واحصل على إجابة فورية مع شرح مفصل ومراجع</p>
+        <div style="margin-top: 1rem;">
+          <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." style="width: 100%; padding: 0.8rem; border-radius: 10px; border: none; margin-bottom: 1rem;">
+          <button class="demo-button" onclick="sendChatMessage()">إرسال السؤال</button>
+        </div>
+        <div id="chatResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; display: none;">
+          <p id="chatText"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-calculator"></i></div>
+        <h3 class="card-title">حلال المسائل</h3>
+        <p class="card-content">أدخل مسألة فيزيائية واحصل على الحل خطوة بخطوة مع الشرح</p>
+        <div style="margin-top: 1rem;">
+          <textarea id="problemInput" placeholder="اكتب المسألة هنا..." style="width: 100%; height: 100px; padding: 0.8rem; border-radius: 10px; border: none; margin-bottom: 1rem; resize: vertical;"></textarea>
+          <button class="demo-button" onclick="solveProblem()">حل المسألة</button>
+        </div>
+        <div id="solutionResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; display: none;">
+          <p id="solutionText"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+        <h3 class="card-title">شرح المفاهيم</h3>
+        <p class="card-content">اطلب شرح أي مفهوم فيزيائي واحصل على شرح مبسط مع أمثلة</p>
+        <div style="margin-top: 1rem;">
+          <select id="conceptSelect" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: none; margin-bottom: 1rem;">
+            <option value="">اختر مفهوماً...</option>
+            <option value="newton-laws">قوانين نيوتن</option>
+            <option value="energy">الطاقة</option>
+            <option value="waves">الموجات</option>
+            <option value="electricity">الكهرباء</option>
+            <option value="magnetism">المغناطيسية</option>
+            <option value="optics">البصريات</option>
+            <option value="thermodynamics">الديناميكا الحرارية</option>
+            <option value="quantum">الفيزياء الكمية</option>
+          </select>
+          <button class="demo-button" onclick="explainConcept()">شرح المفهوم</button>
+        </div>
+        <div id="conceptResponse" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; display: none;">
+          <p id="conceptText"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-book-open"></i></div>
+        <h3 class="card-title">مكتبة المراجع</h3>
+        <p class="card-content">مكتبة شاملة من المراجع والكتب والأوراق العلمية في الفيزياء</p>
+        <button class="demo-button" onclick="showDemo('reference-library')">تصفح المكتبة</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-history"></i></div>
+        <h3 class="card-title">تاريخ المحادثات</h3>
+        <p class="card-content">راجع جميع محادثاتك السابقة مع المساعد الذكي</p>
+        <button class="demo-button" onclick="showDemo('chat-history')">عرض التاريخ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Smart Tests Section -->
+  <section id="smart-tests" class="fade-in section-content" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">🧪 الاختبارات الذكية</h2>
+      <p class="section-subtitle">نظام اختبارات متطور يتكيف مع مستوى كل طالب</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-brain"></i></div>
+        <h3 class="card-title">الاختبار التكيفي</h3>
+        <p class="card-content">اختبار ذكي يتكيف مع مستواك ويقدم أسئلة مناسبة لقدراتك</p>
+        <button class="demo-button" onclick="startAdaptiveTest()">بدء الاختبار</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-stopwatch"></i></div>
+        <h3 class="card-title">اختبار سريع</h3>
+        <p class="card-content">اختبار سريع لتقييم فهمك لموضوع معين في 10 دقائق</p>
+        <button class="demo-button" onclick="startQuickTest()">اختبار سريع</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
+        <h3 class="card-title">اختبار شامل</h3>
+        <p class="card-content">اختبار شامل يغطي جميع مواضيع الفيزياء لتقييم مستواك العام</p>
+        <button class="demo-button" onclick="startComprehensiveTest()">اختبار شامل</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+        <h3 class="card-title">تحليل النتائج</h3>
+        <p class="card-content">تحليل مفصل لنتائج اختباراتك مع نقاط القوة والضعف</p>
+        <button class="demo-button" onclick="showTestAnalysis()">تحليل النتائج</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-redo"></i></div>
+        <h3 class="card-title">إعادة الاختبار</h3>
+        <p class="card-content">أعد أي اختبار سابق لتحسين نتيجتك وتعزيز فهمك</p>
+        <button class="demo-button" onclick="retakeTest()">إعادة اختبار</button>
+      </div>
+
+      <div class="card">
+        <div class="card-icon"><i class="fas fa-medal"></i></div>
+        <h3 class="card-title">التحديات</h3>
+        <p class="card-content">تحديات أسبوعية وشهرية مع جوائز وشهادات للفائزين</p>
+        <button class="demo-button" onclick="showChallenges()">عرض التحديات</button>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <div class="dashboard-card">
+        <h3 class="dashboard-title">📊 إحصائيات الاختبارات</h3>
+        <canvas id="testStatsChart" width="400" height="200"></canvas>
+      </div>
+      <div class="dashboard-card">
+        <h3 class="dashboard-title">🎯 أداء المواضيع</h3>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 90%"></div>
+        </div>
+        <p>الميكانيكا: 90%</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 85%"></div>
+        </div>
+        <p>الكهرباء: 85%</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 75%"></div>
+        </div>
+        <p>البصريات: 75%</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 80%"></div>
+        </div>
+        <p>الموجات: 80%</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal for Demos -->
+  <div id="demoModal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">&times;</button>
+      <div id="modalContent">
+        <!-- Demo content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <h3 class="footer-title">فيزياء الفرات</h3>
+      <p>إعداد الفيزيائية :  إيمان العبد العزيز</p>
+      <p style="margin-top: 2rem; opacity: 0.8;">بإشراف  الدكتور :  نورس  الهلامي </p>
+    </div>
+  </footer>
+
+  <script>
+    // Global Variables
+    let currentLanguage = 'ar';
+    let isDarkMode = false;
+    let isRecording = false;
+    let currentSection = 'dashboard';
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hide loading overlay
+      setTimeout(() => {
+        document.getElementById('loadingOverlay').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loadingOverlay').style.display = 'none';
+        }, 500);
+      }, 2000);
+
+      // Initialize animations
+      initializeAnimations();
+      
+      // Initialize charts
+      initializeCharts();
+      
+      // Initialize scroll animations
+      initializeScrollAnimations();
+      
+      // Animate statistics
+      animateStats();
+    });
+
+    // Mobile Menu Toggle Function - إضافة جديدة
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+      
+      navLinks.classList.toggle('active');
+      
+      // تغيير أيقونة القائمة
+      if (navLinks.classList.contains('active')) {
+        mobileMenuIcon.className = 'fas fa-times';
+      } else {
+        mobileMenuIcon.className = 'fas fa-bars';
+      }
+    }
+
+    // Close mobile menu when clicking on a link - إضافة جديدة
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      
+      // إذا تم النقر خارج القائمة أو زر القائمة، أغلق القائمة
+      if (!navLinks.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+        navLinks.classList.remove('active');
+        document.getElementById('mobileMenuIcon').className = 'fas fa-bars';
+      }
+    });
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark-mode');
+      
+      const icon = document.getElementById('darkModeIcon');
+      icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+      
+      // Save preference
+      localStorage.setItem('darkMode', isDarkMode);
+    }
+
+    // Language Toggle
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+      document.getElementById('languageText').textContent = currentLanguage === 'ar' ? 'EN' : 'AR';
+      
+      // Update all elements with language attributes
+      const elements = document.querySelectorAll('[data-ar][data-en]');
+      elements.forEach(element => {
+        element.textContent = element.getAttribute(`data-${currentLanguage}`);
+      });
+      
+      // Update document direction
+      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLanguage;
+      
+      // Save preference
+      localStorage.setItem('language', currentLanguage);
+    }
+
+    // Section Navigation
+    function showSection(sectionId) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.section-content');
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show selected section
+      document.getElementById(sectionId).style.display = 'block';
+      currentSection = sectionId;
+      
+      // Update URL hash
+      window.location.hash = sectionId;
+      
+      // Close mobile menu if open - إضافة جديدة
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.remove('active');
+      document.getElementById('mobileMenuIcon').className = 'fas fa-bars';
+      
+      // Trigger scroll animations
+      setTimeout(() => {
+        initializeScrollAnimations();
+      }, 100);
+    }
+
+    // Tab System
+    function showTab(tabId) {
+      // Hide all tab contents
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remove active class from all tab buttons
+      const tabButtons = document.querySelectorAll('.tab-button');
+      tabButtons.forEach(button => {
+        button.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabId).classList.add('active');
+      
+      // Add active class to clicked button
+      event.target.classList.add('active');
+    }
+
+    // Demo Functions
+    function showDemo(demoType) {
+      const modal = document.getElementById('demoModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      // Demo content based on type
+      const demoContents = {
+        'student-profile': `
+          <h2>🎓 الملف الشخصي الذكي</h2>
+          <div style="text-align: center; padding: 2rem;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+              <h3>أحمد محمد علي</h3>
+              <p>الصف الثاني الثانوي - القسم العلمي</p>
+              <p>المستوى: متقدم | النقاط: 2,450</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+              <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                <h4>الميكانيكا</h4>
+                <div style="background: #4CAF50; height: 10px; border-radius: 5px; width: 85%;"></div>
+                <p>85%</p>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                <h4>الكهرباء</h4>
+                <div style="background: #2196F3; height: 10px; border-radius: 5px; width: 92%;"></div>
+                <p>92%</p>
+              </div>
+              <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                <h4>البصريات</h4>
+                <div style="background: #FF9800; height: 10px; border-radius: 5px; width: 78%;"></div>
+                <p>78%</p>
+              </div>
+            </div>
+          </div>
+        `,
+        'ai-tutor': `
+          <h2> المساعد الشخصي AI</h2>
+          <div style="padding: 2rem;">
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+              <strong>أنت:</strong> ما هو قانون نيوتن الثاني؟
+            </div>
+            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+              <strong>المساعد AI:</strong> قانون نيوتن الثاني ينص على أن القوة المحصلة المؤثرة على جسم تساوي كتلة الجسم مضروبة في تسارعه. 
+              <br><br>
+              الصيغة الرياضية: F = ma
+              <br><br>
+              حيث:
+              <br>• F = القوة (نيوتن)
+              <br>• m = الكتلة (كيلوغرام)  
+              <br>• a = التسارع (متر/ثانية²)
+              <br><br>
+              هل تريد مني شرح تطبيق عملي على هذا القانون؟
+            </div>
+            <input type="text" placeholder="اكتب سؤالك التالي..." style="width: 100%; padding: 0.8rem; border-radius: 10px; border: none;">
+          </div>
+        `,
+        'vr-lab': `
+          <h2>🔬 المختبر الافتراضي</h2>
+          <div style="text-align: center; padding: 2rem;">
+            <div style="background: linear-gradient(45deg, #1e3c72, #2a5298); height: 300px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 2rem;">
+              <div>
+                <i class="fas fa-vr-cardboard" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                <h3>تجربة البندول البسيط</h3>
+                <p>اسحب البندول وشاهد الحركة التوافقية البسيطة</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+              <button style="background: #4CAF50; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px;">بدء التجربة</button>
+              <button style="background: #2196F3; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px;">تغيير المتغيرات</button>
+              <button style="background: #FF9800; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px;">حفظ النتائج</button>
+            </div>
+          </div>
+        `
+      };
+      
+      modalContent.innerHTML = demoContents[demoType] || '<h2>قريباً...</h2><p>هذه الميزة قيد التطوير</p>';
+      modal.style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('demoModal').style.display = 'none';
+    }
+
+    // Physics Simulations
+    function startSimulation(type) {
+      const canvas = document.getElementById('physicsCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Simple animation based on type
+      switch(type) {
+        case 'pendulum':
+          animatePendulum(ctx, canvas);
+          break;
+        case 'projectile':
+          animateProjectile(ctx, canvas);
+          break;
+        case 'collision':
+          animateCollision(ctx, canvas);
+          break;
+        case 'circular':
+          animateCircular(ctx, canvas);
+          break;
+      }
+    }
+
+    function animatePendulum(ctx, canvas) {
+      let angle = Math.PI / 4;
+      let angleVel = 0;
+      const length = 150;
+      const gravity = 0.5;
+      const centerX = canvas.width / 2;
+      const centerY = 50;
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Calculate pendulum position
+        const x = centerX + length * Math.sin(angle);
+        const y = centerY + length * Math.cos(angle);
+        
+        // Draw string
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw bob
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = '#FFD700';
+        ctx.fill();
+        
+        // Update physics
+        const angleAcc = (-gravity / length) * Math.sin(angle);
+        angleVel += angleAcc;
+        angle += angleVel;
+        angleVel *= 0.999; // Damping
+        
+        requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animateProjectile(ctx, canvas) {
+      let x = 50;
+      let y = canvas.height - 50;
+      let vx = 8;
+      let vy = -15;
+      const gravity = 0.5;
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw projectile
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = '#FF6B6B';
+        ctx.fill();
+        
+        // Update physics
+        x += vx;
+        y += vy;
+        vy += gravity;
+        
+        // Reset if out of bounds
+        if (x > canvas.width || y > canvas.height) {
+          x = 50;
+          y = canvas.height - 50;
+          vx = 8;
+          vy = -15;
+        }
+        
+        requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animateCollision(ctx, canvas) {
+      let ball1 = {x: 100, y: canvas.height/2, vx: 3, vy: 0, radius: 20, color: '#4ECDC4'};
+      let ball2 = {x: canvas.width - 100, y: canvas.height/2, vx: -2, vy: 0, radius: 25, color: '#45B7D1'};
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw balls
+        [ball1, ball2].forEach(ball => {
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI);
+          ctx.fillStyle = ball.color;
+          ctx.fill();
+          
+          // Update position
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+          
+          // Bounce off walls
+          if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+            ball.vx *= -1;
+          }
+          if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+            ball.vy *= -1;
+          }
+        });
+        
+        // Check collision
+        const dx = ball1.x - ball2.x;
+        const dy = ball1.y - ball2.y;
+        const distance = Math.sqrt(dx*dx + dy*dy);
+        
+        if (distance < ball1.radius + ball2.radius) {
+          // Simple collision response
+          const temp = ball1.vx;
+          ball1.vx = ball2.vx;
+          ball2.vx = temp;
+        }
+        
+        requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animateCircular(ctx, canvas) {
+      let angle = 0;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = 100;
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw circle path
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Calculate position
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        
+        // Draw moving object
+        ctx.beginPath();
+        ctx.arc(x, y, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = '#96CEB4';
+        ctx.fill();
+        
+        // Draw velocity vector
+        const vx = -Math.sin(angle) * 30;
+        const vy = Math.cos(angle) * 30;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + vx, y + vy);
+        ctx.strokeStyle = '#FFD93D';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        angle += 0.05;
+        requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    // AI Assistant Functions
+    function startVoiceRecording() {
+      if (!isRecording) {
+        isRecording = true;
+        document.getElementById('voiceResponse').style.display = 'block';
+        document.getElementById('voiceText').textContent = '🎤 جاري التسجيل... تحدث الآن';
+        
+        // Simulate voice recognition
+        setTimeout(() => {
+          document.getElementById('voiceText').innerHTML = `
+            <strong>سؤالك:</strong> "ما هي سرعة الضوء؟"<br><br>
+            <strong>الإجابة:</strong> سرعة الضوء في الفراغ هي 299,792,458 متر في الثانية، وهي ثابت فيزيائي مهم جداً في النسبية الخاصة لأينشتاين.
+          `;
+        }, 3000);
+      }
+    }
+
+    function stopVoiceRecording() {
+      isRecording = false;
+      if (document.getElementById('voiceText').textContent.includes('جاري التسجيل')) {
+        document.getElementById('voiceText').textContent = 'تم إيقاف التسجيل';
+      }
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const response = document.getElementById('chatResponse');
+      
+      if (input.value.trim()) {
+        response.style.display = 'block';
+        response.innerHTML = `
+          <strong>سؤالك:</strong> ${input.value}<br><br>
+          <strong>الإجابة:</strong> شكراً لسؤالك! هذا سؤال ممتاز في الفيزياء. دعني أشرح لك بالتفصيل...
+          <br><br>
+          <em>جاري تحضير إجابة مفصلة...</em>
+        `;
+        input.value = '';
+        
+        // Simulate AI response
+        setTimeout(() => {
+          response.innerHTML = `
+            <strong>سؤالك:</strong> ${input.value}<br><br>
+            <strong>الإجابة:</strong> بناءً على سؤالك، إليك شرح مفصل مع أمثلة عملية ومراجع للمزيد من القراءة.
+            <br><br>
+            هل تريد المزيد من التوضيح حول أي نقطة معينة؟
+          `;
+        }, 2000);
+      }
+    }
+
+    function solveProblem() {
+      const input = document.getElementById('problemInput');
+      const response = document.getElementById('solutionResponse');
+      
+      if (input.value.trim()) {
+        response.style.display = 'block';
+        response.innerHTML = `
+          <strong>المسألة:</strong> ${input.value}<br><br>
+          <strong>الحل:</strong><br>
+          الخطوة 1: تحديد المعطيات<br>
+          الخطوة 2: تحديد المطلوب<br>
+          الخطوة 3: اختيار القانون المناسب<br>
+          الخطوة 4: التعويض في القانون<br>
+          الخطوة 5: الحل النهائي<br><br>
+          <em>جاري تحضير الحل المفصل...</em>
+        `;
+      }
+    }
+
+    function explainConcept() {
+      const select = document.getElementById('conceptSelect');
+      const response = document.getElementById('conceptResponse');
+      
+      if (select.value) {
+        response.style.display = 'block';
+        const concepts = {
+          'newton-laws': 'قوانين نيوتن الثلاثة هي أساس الميكانيكا الكلاسيكية...',
+          'energy': 'الطاقة هي القدرة على إنجاز شغل، وتوجد في أشكال مختلفة...',
+          'waves': 'الموجات هي اضطرابات تنتشر في الوسط دون انتقال المادة...',
+          'electricity': 'الكهرباء هي مجموعة الظواهر الفيزيائية المرتبطة بوجود الشحنات الكهربائية...',
+          'magnetism': 'المغناطيسية هي قوة فيزيائية تنشأ من حركة الشحنات الكهربائية...',
+          'optics': 'البصريات هي فرع الفيزياء الذي يدرس سلوك الضوء...',
+          'thermodynamics': 'الديناميكا الحرارية تدرس العلاقة بين الحرارة والشغل...',
+          'quantum': 'الفيزياء الكمية تصف سلوك المادة والطاقة على المستوى الذري...'
+        };
+        
+        response.innerHTML = `
+          <strong>شرح ${select.options[select.selectedIndex].text}:</strong><br><br>
+          ${concepts[select.value]}<br><br>
+          <em>جاري تحضير شرح مفصل مع أمثلة وتطبيقات...</em>
+        `;
+      }
+    }
+
+    // Test Functions
+    function startAdaptiveTest() {
+      showDemo('adaptive-test');
+    }
+
+    function startQuickTest() {
+      showDemo('quick-test');
+    }
+
+    function startComprehensiveTest() {
+      showDemo('comprehensive-test');
+    }
+
+    function showTestAnalysis() {
+      showDemo('test-analysis');
+    }
+
+    function retakeTest() {
+      showDemo('retake-test');
+    }
+
+    function showChallenges() {
+      showDemo('challenges');
+    }
+
+    // Chart Initialization
+    function initializeCharts() {
+      // Performance Chart
+      const performanceCtx = document.getElementById('performanceChart');
+      if (performanceCtx) {
+        new Chart(performanceCtx, {
+          type: 'line',
+          data: {
+            labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+            datasets: [{
+              label: 'الأداء العام',
+              data: [65, 70, 75, 85, 88, 92],
+              borderColor: '#FFD700',
+              backgroundColor: 'rgba(255, 215, 0, 0.1)',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#fff'
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: '#fff'
+                },
+                grid: {
+                  color: 'rgba(255,255,255,0.1)'
+                }
+              },
+              x: {
+                ticks: {
+                  color: '#fff'
+                },
+                grid: {
+                  color: 'rgba(255,255,255,0.1)'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Test Stats Chart
+      const testStatsCtx = document.getElementById('testStatsChart');
+      if (testStatsCtx) {
+        new Chart(testStatsCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['ممتاز', 'جيد جداً', 'جيد', 'مقبول'],
+            datasets: [{
+              data: [45, 30, 20, 5],
+              backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#F44336']
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#fff'
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // Animation Functions
+    function initializeAnimations() {
+      // Add any initialization animations here
+    }
+
+    function initializeScrollAnimations() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    function animateStats() {
+      const statNumbers = document.querySelectorAll('.stat-number');
+      
+      statNumbers.forEach(stat => {
+        const target = parseInt(stat.getAttribute('data-target'));
+        const increment = target / 100;
+        let current = 0;
+        
+        const timer = setInterval(() => {
+          current += increment;
+          stat.textContent = Math.floor(current);
+          
+          if (current >= target) {
+            stat.textContent = target;
+            clearInterval(timer);
+          }
+        }, 20);
+      });
+    }
+
+    // Load saved preferences
+    window.addEventListener('load', () => {
+      const savedDarkMode = localStorage.getItem('darkMode');
+      const savedLanguage = localStorage.getItem('language');
+      
+      if (savedDarkMode === 'true') {
+        toggleDarkMode();
+      }
+      
+      if (savedLanguage && savedLanguage !== currentLanguage) {
+        toggleLanguage();
+      }
+      
+      // Handle URL hash
+      const hash = window.location.hash.substring(1);
+      if (hash && document.getElementById(hash)) {
+        showSection(hash);
+      }
+    });
+
+    // Handle browser back/forward
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash && document.getElementById(hash)) {
+        showSection(hash);
+      }
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+      const modal = document.getElementById('demoModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (event) => {
+      // ESC to close modal
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+      
+      // Ctrl/Cmd + D for dark mode
+      if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
+        event.preventDefault();
+        toggleDarkMode();
+      }
+      
+      // Ctrl/Cmd + L for language
+      if ((event.ctrlKey || event.metaKey) && event.key === 'l') {
+        event.preventDefault();
+        toggleLanguage();
+      }
+    });
+  </script>
+</body>
+</html>
+
